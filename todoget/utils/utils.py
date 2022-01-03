@@ -32,3 +32,13 @@ def success_file_scan(filename):
 
 def success_output(filename):
     print(text_blue(tick()) + " " + filename + " created!")
+    
+def remove_comments_sym(line):
+    line = line.replace("<!--", "")
+    line = line.replace("-->", "")
+    line = line.replace("#", "")
+    return(line)
+
+def remove_pattern_sym(line, pattern):
+    line = line.replace(pattern, "")
+    return line
