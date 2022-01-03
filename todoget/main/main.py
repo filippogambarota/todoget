@@ -1,6 +1,7 @@
 import yaml
 import os
 from todoget.wrt import wrt
+from todoget.utils import utils
 
 def init_config_file():
     skeleton_config = {
@@ -50,14 +51,10 @@ class workflow_object(object):
         return self
 
     def create_output(self):
-        out = "### " + self.name + "\n\n"
         if len(self.line_list) != 0:
+            out = "### " + self.name + "\n\n"
             for i, line in enumerate(self.line_list):
                 out += line
-        """
-        else:
-            out += "No " + self.name + " tags in the file, well done! :)" + "\n"
-        """
         return out
 
 def init_config_file(config_file_name = '.todoget'):
@@ -71,6 +68,7 @@ def init_config_file(config_file_name = '.todoget'):
             "include_all_files": True,
             "include_files": [""],
             "exclude_files": [""],
+            "include_files_ext": [""],
             "outfile_name": "outfile",
             "outfile_format": "md"
             }
@@ -86,7 +84,8 @@ def get_files_to_track(setup_info):
         out = remove_excluded_files(temp, exclude_files)
     else:
         out = setup_info["include_files"]
-    return out
+    
+    return get_file_with_ext(out, setup_info)
 
 def get_config_info(config_file):
     config_info = config_file["config"]
@@ -143,6 +142,24 @@ def remove_excluded_files(target_list, exclude_list):
     out = [i for i in target_list if i not in exclude_list]
     return out
 
+def to_include(wobj):
+             out = [len(x.line_list) > 0 for x in wobj]
+             return any(out)
+         
+def get_file_with_ext(files_to_track, setup_info):
+    files_to_track = [x for x in files_to_track if get_file_ext(x) in setup_info['include_files_ext']]
+    return files_to_track
+
+def check_which_include(workflow_list):
+    for i, wobj in enumerate(workflow_list):
+            wobj['include'] = to_include(wobj['objs'])
+
+def scan_all_files_and_patterns(workflow_list):
+    for i, target_file in enumerate(workflow_list):
+        utils.success_file_scan(target_file['file'])
+        for j, obj in enumerate(target_file['objs']):
+            obj.get_lines_with_pattern(target_file['file'])
+    
 
 def read_config_file():
     with open('.todoget', 'r') as f:
