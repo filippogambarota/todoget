@@ -44,12 +44,12 @@ class workflow_object(object):
 			for line in tgt_lines:
 				self.nlines += 1
 				if self.pattern in line:
-					line_new = wrt.format_line(line, self.nlines)
+					line_new = wrt.format_line(line, self.nlines, self.pattern)
 					self.line_list.append(line_new)
 		return self
 
 	def create_output(self):
-		out = "## " + self.name + "\n\n"
+		out = "### " + self.name + "\n\n"
 		if len(self.line_list) != 0:
 			for i, line in enumerate(self.line_list):
 				out += line
@@ -69,7 +69,7 @@ def init_config_file(config_file_name = '.todoget'):
             "include_files": [""],
             "exclude_files": [""],
             "outfile_name": "outfile",
-            "outfile_format": "txt"
+            "outfile_format": "md"
             }
         }
     with open(config_file_name, 'w') as outfile:
@@ -77,7 +77,7 @@ def init_config_file(config_file_name = '.todoget'):
 
 def get_files_to_track(setup_info):
     exclude_files = setup_info["exclude_files"]
-    exclude_files.append(setup_info["outfile_name"])
+    exclude_files.append(setup_info["outfile_name"] + "." + setup_info["outfile_format"])
     if setup_info["include_all_files"]:
         temp = get_all_non_hidden_files()
         out = remove_excluded_files(temp, exclude_files)
