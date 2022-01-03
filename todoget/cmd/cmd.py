@@ -28,9 +28,11 @@ def todoget(cmd):
         workflow_list = main.create_worflow_list(dict_objects, main.workflow_object, files_to_track)
             
         # Create Output file
+        
+        outfile_name = setup_info["outfile_name"] + "." + setup_info["outfile_format"]
 
-        with open(setup_info["outfile"], "w") as outfile:
-            outfile.writelines(wrt.create_header())
+        with open(outfile_name, "w") as outfile:
+            outfile.writelines(wrt.create_out_title())
             for i, target_file in enumerate(workflow_list):
                 outfile.writelines(wrt.create_file_title(target_file["file"]))
                 utils.success_file_scan(target_file["file"])
@@ -41,4 +43,4 @@ def todoget(cmd):
                         outfile.writelines(obj.create_output())
                         outfile.writelines("\n")
                         
-        utils.success_output(setup_info["outfile"])
+        utils.success_output(outfile_name)
