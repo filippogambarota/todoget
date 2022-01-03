@@ -26,7 +26,8 @@ def todoget(cmd):
         # Create the full list of dictionaries
         
         workflow_list = main.create_worflow_list(dict_objects, main.workflow_object, files_to_track)
-            
+    
+        
         # Create Output file
         
         outfile_name = setup_info["outfile_name"] + "." + setup_info["outfile_format"]
@@ -37,10 +38,11 @@ def todoget(cmd):
                 outfile.writelines(wrt.create_file_title(target_file["file"]))
                 utils.success_file_scan(target_file["file"])
                 for j, obj in enumerate(target_file["objs"]):
-                    if obj.active:
                         obj.get_lines_with_pattern(target_file["file"])
-                        outfile.writelines("\n")
-                        outfile.writelines(obj.create_output())
-                        outfile.writelines("\n")
+                        if len(obj.line_list) > 0 and obj.active > 0:
+                            outfile.writelines("\n")
+                            outfile.writelines(obj.create_output())
+                            outfile.writelines("\n")
                         
         utils.success_output(outfile_name)
+        
