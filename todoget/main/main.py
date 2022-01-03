@@ -14,7 +14,8 @@ def init_config_file():
             "include_files": [""],
             "exclude_files": [""],
             "outfile_name": "outfile",
-            "outfile_format": "txt"
+            "outfile_format": "txt",
+            "report_all": False
             }
         }
     with open('.todoget', 'w') as outfile:
@@ -23,39 +24,41 @@ def init_config_file():
 # NOTE have a look here for the istances from dictionary https://stackoverflow.com/questions/1639174/creating-class-instance-properties-from-a-dictionary
 
 class workflow_object(object):
-	def __init__(self, dict):
-		self.name = dict["name"]
-		self.pattern = dict["pattern"]
-		self.nlines = 0
-		self.line_list = []
-		self.active = dict["active"]
+    def __init__(self, dict):
+        self.name = dict["name"]
+        self.pattern = dict["pattern"]
+        self.nlines = 0
+        self.line_list = []
+        self.active = dict["active"]
   
-	# thanks to https://stackoverflow.com/a/1639632
-	#def __getattr__(self, name):
-	#	return self[name]
+    # thanks to https://stackoverflow.com/a/1639632
+    #def __getattr__(self, name):
+    #	return self[name]
 
-	def get_lines_with_pattern(self, filename):
-		
-		with open(filename, 'r') as outfile:
-			tgt_lines = outfile.readlines() # read all lines
-			line_count = -1 # counter for the line
-		
-			# Loop and get line number, text and format
-			for line in tgt_lines:
-				self.nlines += 1
-				if self.pattern in line:
-					line_new = wrt.format_line(line, self.nlines, self.pattern)
-					self.line_list.append(line_new)
-		return self
+    def get_lines_with_pattern(self, filename):
+        
+        with open(filename, 'r') as outfile:
+            tgt_lines = outfile.readlines() # read all lines
+            line_count = -1 # counter for the line
+        
+            # Loop and get line number, text and format
+            for line in tgt_lines:
+                self.nlines += 1
+                if self.pattern in line:
+                    line_new = wrt.format_line(line, self.nlines, self.pattern)
+                    self.line_list.append(line_new)
+        return self
 
-	def create_output(self):
-		out = "### " + self.name + "\n\n"
-		if len(self.line_list) != 0:
-			for i, line in enumerate(self.line_list):
-				out += line
-		else:
-			out += "No " + self.name + " tags in the file, well done! :)" + "\n"
-		return out
+    def create_output(self):
+        out = "### " + self.name + "\n\n"
+        if len(self.line_list) != 0:
+            for i, line in enumerate(self.line_list):
+                out += line
+        """
+        else:
+            out += "No " + self.name + " tags in the file, well done! :)" + "\n"
+        """
+        return out
 
 def init_config_file(config_file_name = '.todoget'):
     skeleton_config = {
@@ -101,9 +104,9 @@ def get_all_non_hidden_files():
     return list_files
 
 def get_workflow_entry(config_file):
-	# get only the workflow objects
-	dict_objects = {a:config_file[a] for a in config_file.keys() if not a in "config"}
-	return dict_objects
+    # get only the workflow objects
+    dict_objects = {a:config_file[a] for a in config_file.keys() if not a in "config"}
+    return dict_objects
 
 def create_workflow_objects(dict_objects, workflow_objects):
     out = []
@@ -126,15 +129,15 @@ def create_worflow_list(dict_objects, workflow_object, files_to_track):
     return final_list
 
 def get_file_name(filename):
-	basename_file = os.path.basename(filename)
-	filename = os.path.splitext(basename_file)[0]
-	return filename
-	
+    basename_file = os.path.basename(filename)
+    filename = os.path.splitext(basename_file)[0]
+    return filename
+    
 def get_file_ext(filename):
-	basename_file = os.path.basename(filename)
-	filename = os.path.splitext(basename_file)[1]
-	return filename
-	
+    basename_file = os.path.basename(filename)
+    filename = os.path.splitext(basename_file)[1]
+    return filename
+    
 
 def remove_excluded_files(target_list, exclude_list):
     out = [i for i in target_list if i not in exclude_list]
@@ -142,6 +145,6 @@ def remove_excluded_files(target_list, exclude_list):
 
 
 def read_config_file():
-	with open('.todoget', 'r') as f:
-		config_file = yaml.load(f, Loader=yaml.FullLoader) # also, yaml.SafeLoader
-	return config_file
+    with open('.todoget', 'r') as f:
+        config_file = yaml.load(f, Loader=yaml.FullLoader) # also, yaml.SafeLoader
+    return config_file
